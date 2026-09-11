@@ -14,8 +14,10 @@ The skill helps an agent make deliberate, version-aware choices across the Selen
 - Use browser-specific options, Selenium Manager, WebDriver BiDi, CDP boundaries, Grid, WebAuthn virtual authenticators, FedCM, and request contexts only when appropriate and supported.
 - Keep retries bounded and idempotent, isolate browser state, verify meaningful outcomes, and protect diagnostic artifacts.
 - Review automation changes for lifecycle, synchronization, portability, observability, and safety risks.
+- Run long scrapes that resume after a crash, persist page by page, verify completeness, and stay within the target's limits.
+- Diagnose the environment itself: Selenium version, Selenium Manager, installed browsers, proxy configuration, and a real launch check.
 
-The package includes a reference index of public Selenium Python APIs and official documentation families. It is a guide, not a Selenium replacement: always confirm the installed Selenium package, browser, driver, Grid, and operating environment before using version-sensitive features.
+The package ships more than instructions: a drop-in Python toolkit, a runnable scraper template, pytest fixtures, an environment doctor, a reference index of public Selenium Python APIs, and playbooks for recipes, scraping, troubleshooting, browser environments, and scale. It is a guide, not a Selenium replacement: always confirm the installed Selenium package, browser, driver, Grid, and operating environment before using version-sensitive features.
 
 ## Safety Boundaries
 
@@ -75,13 +77,66 @@ After an update, restart the coding agent when needed so it reloads the installe
 └── skills/
     └── selenium-sentinel/
         ├── SKILL.md
-        │   Agent-facing Selenium operating guidance and safety requirements.
-        └── references/
-            └── official-python-api-coverage.md
-                Coverage map for public Selenium Python APIs and official sources.
+        │   Agent-facing operating loop, invariants, checklists, and safety requirements.
+        ├── references/
+        │   ├── official-python-api-coverage.md
+        │   │   Coverage map for public Selenium Python APIs and official sources.
+        │   ├── recipes.md
+        │   │   Verified patterns for the situations that recur in every Selenium job.
+        │   ├── scraping-playbook.md
+        │   │   Phase-by-phase procedure for an authorized scrape, recon to maintenance.
+        │   ├── troubleshooting.md
+        │   │   Exception-by-exception diagnosis: cause, discriminating check, real fix.
+        │   ├── browser-environments.md
+        │   │   Options and preferences per browser, Windows and container notes, timeouts.
+        │   └── scale-and-remote.md
+        │       Parallelism isolation, Remote/Grid, BiDi versus CDP, job observability.
+        ├── assets/
+        │   ├── README.md
+        │   │   Toolkit installation, module map, and environment variables.
+        │   ├── requirements.txt
+        │   │   Selenium is the only dependency.
+        │   ├── scraper_template.py
+        │   │   Working paginated-scrape skeleton with contracts, sinks, and evidence.
+        │   ├── conftest.py
+        │   │   pytest fixtures: isolated driver per test, automatic failure evidence.
+        │   └── sentinel/
+        │       Drop-in toolkit: config, driver, waits, pagination, extract,
+        │       downloads, artifacts, logging, pipeline.
+        └── scripts/
+            └── selenium_doctor.py
+                Environment diagnostics: Python, Selenium, Manager, browsers, launch check.
 ```
 
-`SKILL.md` is the operational entry point. Its reference file expands coverage for unfamiliar or version-sensitive Selenium features; it does not promise universal browser support.
+`SKILL.md` is the operational entry point. References expand coverage for
+unfamiliar or version-sensitive Selenium features; they do not promise universal
+browser support.
+
+## Toolkit
+
+`skills/selenium-sentinel/assets/sentinel/` is a dependency-free layer over the
+official Selenium Python API that makes the correct defaults the easy ones. It
+wraps nothing: the object you receive is the real `selenium.webdriver` driver.
+
+- `RunConfig` — one immutable run description, configurable through `SENTINEL_*`
+  environment variables, deriving a per-run directory tree for profile,
+  downloads, logs, evidence, and data.
+- `driver_session()` — isolated Chrome/Edge/Firefox/Remote session with
+  guaranteed `quit()`.
+- `waits` — explicit waits only, each returning what the next action needs.
+- `pagination` — hard-bounded click, URL, and infinite-scroll traversal.
+- `extract` — column contracts, locale-aware parsing, dataset validation,
+  provenance stamping.
+- `downloads` — filesystem-level proof that a download actually completed.
+- `artifacts` / `logging_setup` — redacted failure bundles and structured JSONL logs.
+- `pipeline` — JSONL/CSV sinks, resumable checkpoints, politeness throttling,
+  bounded retry for idempotent operations only.
+
+Verify the environment before anything else:
+
+```bash
+python skills/selenium-sentinel/scripts/selenium_doctor.py --launch
+```
 
 ## Versioning And Releases
 

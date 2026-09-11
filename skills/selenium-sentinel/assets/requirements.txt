@@ -1,0 +1,8 @@
+# Minimal, pinned-range dependencies for the Selenium Sentinel toolkit.
+# The toolkit itself has no dependency beyond Selenium and the standard library.
+
+selenium>=4.30,<5
+
+# Only when the project runs browser tests with pytest:
+# pytest>=8,<9
+# pytest-xdist>=3,<4   # parallel workers, one isolated driver each

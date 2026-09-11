@@ -20,4 +20,8 @@ reports/
 *.png
 *.pdf
 *.zip
-*** Update File: C:/Users/juanm/Documents/Juanml0331123 GitHub/selenium-sentinel/references/official-python-api-coverage.md
+
+# Selenium Sentinel run output
+.sentinel/
+*.crdownload
+*.part
