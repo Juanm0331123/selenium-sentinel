@@ -1,0 +1,23 @@
+.env
+.env.*
+!.env.example
+
+__pycache__/
+*.py[cod]
+
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+artifacts/
+downloads/
+logs/
+profiles/
+screenshots/
+reports/
+
+*.log
+*.png
+*.pdf
+*.zip
+*** Update File: C:/Users/juanm/Documents/Juanml0331123 GitHub/selenium-sentinel/references/official-python-api-coverage.md
